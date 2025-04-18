@@ -1,0 +1,12 @@
+[Unit]
+Description=WarpGen Telegram Bot
+After=network.target
+
+[Service]
+User=your_user
+WorkingDirectory=/path/to/warpgen
+ExecStart=/usr/bin/python3 -m warpgen.bot
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
