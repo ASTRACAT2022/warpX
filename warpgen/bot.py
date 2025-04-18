@@ -1,14 +1,29 @@
-from telegram.ext import Application, CommandHandler
-from .config import BOT_TOKEN
-from .database import Database
+import json
+from http import HTTPStatus
+from telegram import Update
+from warpgen.bot import create_app
 
-async def start(update, context):
-    await update.message.reply_text("Welcome to WarpGen! Use /generate to create a WARP config.")
-
-def main():
-    app = Application.builder().token(BOT_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.run_polling()
-
-if __name__ == "__main__":
-    main()
+async def handler(request):
+    try:
+        # Инициализируем приложение
+        app = create_app()
+        await app.initialize()
+        
+        # Получаем данные от Telegram
+        data = await request.json()
+        update = Update.de_json(data, app.bot)
+        
+        # Обрабатываем обновление
+        await app.process_update(update)
+        
+        return {
+            "statusCode": HTTPStatus.OK,
+            "body": json.dumps({"ok": True})
+        }
+    except Exception as e:
+        return {
+            "statusCode": HTTPStatus.INTERNAL_SERVER_ERROR,
+            "body": json.dumps({"error": str(e)})
+        }
+    finally:
+        await app.shutdown()
