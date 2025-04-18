@@ -1,2 +1,3 @@
-def validate_config(config):
-    return isinstance(config, str) and len(config) > 0
+def validate_user(user_id, db):
+    # Пример проверки (можно расширить)
+    return True  # Или добавить логику проверки бан-листа
